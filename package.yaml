@@ -14,18 +14,24 @@ ghc-options:
 
 default-extensions:
     - BangPatterns
-    - GADTs
+    - DeriveGeneric
     - LambdaCase
+    - OverloadedStrings
     - TupleSections
-    - TypeOperators
 
 dependencies:
-    - name:    base
-      version: ">= 4.13 && < 5"
+    - base          >= 4.13 && < 5
+    - aeson        ^>= 1.4.7.1
+    - http-conduit ^>= 2.3.7.3
+    - text         ^>= 1.2.4.0
+
+library:
+    source-dirs: src
 
 executable:
     main:         Main.hs
     source-dirs:  exe
+    dependencies: mcjoin
 
 extra-doc-files:
     - README.rst

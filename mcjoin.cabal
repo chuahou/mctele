@@ -9,8 +9,8 @@ version:        0.1.0.0
 synopsis:       Telegram bot that notifies when player joins Minecraft server
 description:    A simple Telegram bot that sends a message when a player joins a Minecraft server
 category:       Game
-homepage:       https://github.com/chuahou/mcjoinhs#readme
-bug-reports:    https://github.com/chuahou/mcjoinhs/issues
+homepage:       https://github.com/chuahou/mcjoin#readme
+bug-reports:    https://github.com/chuahou/mcjoin/issues
 maintainer:     Chua Hou <human+github@chuahou.dev>
 license:        MIT
 license-file:   LICENSE
@@ -21,7 +21,23 @@ extra-doc-files:
 
 source-repository head
   type: git
-  location: https://github.com/chuahou/mcjoinhs
+  location: https://github.com/chuahou/mcjoin
+
+library
+  exposed-modules:
+      Mcjoin.Server
+  other-modules:
+      Paths_mcjoin
+  hs-source-dirs:
+      src
+  default-extensions: BangPatterns DeriveGeneric LambdaCase OverloadedStrings TupleSections
+  ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
+  build-depends:
+      aeson >=1.4.7.1 && <1.5
+    , base >=4.13 && <5
+    , http-conduit >=2.3.7.3 && <2.4
+    , text >=1.2.4.0 && <1.3
+  default-language: Haskell2010
 
 executable mcjoin
   main-is: Main.hs
@@ -29,8 +45,12 @@ executable mcjoin
       Paths_mcjoin
   hs-source-dirs:
       exe
-  default-extensions: BangPatterns GADTs LambdaCase TupleSections TypeOperators
+  default-extensions: BangPatterns DeriveGeneric LambdaCase OverloadedStrings TupleSections
   ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
   build-depends:
-      base >=4.13 && <5
+      aeson >=1.4.7.1 && <1.5
+    , base >=4.13 && <5
+    , http-conduit >=2.3.7.3 && <2.4
+    , mcjoin
+    , text >=1.2.4.0 && <1.3
   default-language: Haskell2010

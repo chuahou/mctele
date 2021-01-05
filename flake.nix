@@ -26,14 +26,14 @@
         };
       };
 
-      mcjoinhs = pkgs.haskell.lib.dontHaddock
-        (pkgs.haskellPackages.callCabal2nix "mcjoinhs" ./. {});
+      mcjoin = pkgs.haskell.lib.dontHaddock
+        (pkgs.haskellPackages.callCabal2nix "mcjoin" ./. {});
 
     in rec {
-      defaultPackage."${system}" = mcjoinhs;
+      defaultPackage."${system}" = mcjoin;
 
       devShell."${system}" =
-        (pkgs.haskell.lib.overrideCabal mcjoinhs (old: {
+        (pkgs.haskell.lib.overrideCabal mcjoin (old: {
           buildTools = (old.buildTools or []) ++ (with pkgs.haskellPackages; [
             cabal-install
             haskell-language-server

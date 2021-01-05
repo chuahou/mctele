@@ -1,4 +1,4 @@
-name:        mcjoinhs
+name:        mcjoin
 version:     0.1.0.0
 synopsis:    Telegram bot that notifies when player joins Minecraft server
 description: A simple Telegram bot that sends a message when a player joins a
@@ -22,10 +22,6 @@ default-extensions:
 dependencies:
     - name:    base
       version: ">= 4.13 && < 5"
-      #      mixin:   hiding (Prelude)
-      #    - name:    delude
-      #      version: "^>= 0.1.0.4"
-      #      mixin:   (Delude as Prelude)
 
 executable:
     main:         Main.hs

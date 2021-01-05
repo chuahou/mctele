@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           mcjoinhs
+name:           mcjoin
 version:        0.1.0.0
 synopsis:       Telegram bot that notifies when player joins Minecraft server
 description:    A simple Telegram bot that sends a message when a player joins a Minecraft server
@@ -18,10 +18,10 @@ source-repository head
   type: git
   location: https://github.com/chuahou/mcjoinhs
 
-executable mcjoinhs
+executable mcjoin
   main-is: Main.hs
   other-modules:
-      Paths_mcjoinhs
+      Paths_mcjoin
   hs-source-dirs:
       exe
   default-extensions: BangPatterns GADTs LambdaCase TupleSections TypeOperators

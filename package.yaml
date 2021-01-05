@@ -16,12 +16,14 @@ default-extensions:
     - BangPatterns
     - DeriveGeneric
     - LambdaCase
+    - QuasiQuotes
     - TupleSections
 
 dependencies:
     - base          >= 4.13 && < 5
     - aeson        ^>= 1.4.7.1
     - http-conduit ^>= 2.3.7.3
+    - interpolate
     - text         ^>= 1.2.4.0
 
 library:

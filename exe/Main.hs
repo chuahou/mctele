@@ -6,6 +6,8 @@ module Main where
 import           Mcjoin.Server
 import           Mcjoin.Telegram
 
+import           Control.Concurrent           (threadDelay)
+import           Control.Monad                (when)
 import           Data.Char                    (isDigit)
 import qualified Network.Socket               as Net
 import           System.Environment           (getEnv)
@@ -17,8 +19,7 @@ main = do
     { tok    <- getEnv "MCJOIN_BOT_TOKEN"
     ; chatId <- getEnv "MCJOIN_CHAT_ID"
     ; addr   <- getEnv "MCJOIN_SERVER_ADDR" >>= mkAddr
-    ; info   <- getInfo addr
-    ; sendServerStatus tok chatId info
+    ; loop tok chatId addr Nothing
     }
     where
         mkAddr :: String -> IO Net.SockAddr
@@ -42,3 +43,12 @@ main = do
                         >>= \cs -> case readMaybe cs of
                                      Just w  -> pure w
                                      Nothing -> fail "Invalid number"
+
+        loop tok chatId addr = go
+            where
+                go prev = do
+                    { info <- getInfo addr
+                    ; when (prev /= info) $ sendServerStatus tok chatId info
+                    ; threadDelay 1000000
+                    ; go info
+                    }

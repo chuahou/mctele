@@ -4,7 +4,7 @@ synopsis:    Telegram bot that notifies when player joins Minecraft server
 description: A simple Telegram bot that sends a message when a player joins a
              Minecraft server
 category:    Game
-github:      chuahou/mcjoinhs
+github:      chuahou/mcjoin
 maintainer:  Chua Hou <human+github@chuahou.dev>
 
 ghc-options:

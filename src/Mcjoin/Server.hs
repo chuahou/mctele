@@ -25,14 +25,10 @@ type ServerInfo = Maybe [Player]
 -- | Players are represented by their username string.
 type Player = String
 
--- | Magic number for the start of every payload.
-magic :: ByteString
-magic = pack [ 0xFE, 0xFD ]
-
 -- | Creates a packet with given type and payload.
 makePacket :: Word8 -> ByteString -> ByteString
 makePacket typ payload = Data.ByteString.concat
-                            [ magic
+                            [ pack [ 0xFE, 0xFD ] -- magic prefix
                             , pack [ typ ]
                             , pack [ 0x00, 0x00, 0x00, 0x00 ] -- session ID
                             , payload
@@ -64,8 +60,7 @@ getInfo addr = tryGetInfo attempts
             }
 
         request challenge sock = do
-            { --sock <- Net.socket Net.AF_INET Net.Datagram Net.defaultProtocol
-            ; Net.connect sock addr
+            { Net.connect sock addr
             ; Net.sendAll sock (makePacket 0x00 (Data.ByteString.concat
                                     [ encode challenge
                                     , pack (replicate 4 0x00) -- padding
@@ -76,12 +71,12 @@ getInfo addr = tryGetInfo attempts
                 Just ps -> pure $ Just ps
             }
 
--- Parsers full stats and returns list of players.
-playersP :: Parser [Player]
-playersP =  manyTill anyWord8 (string padding)
-         >> map C8.unpack <$>
-                manyTill (takeWhile1 (/= 0x00) <* word8 0x00) (word8 0x00)
-    where
-        padding = pack [ 0x01, 0x70, 0x6C, 0x61, 0x79
-                       , 0x65, 0x72, 0x5F, 0x00, 0x00
-                       ]
+        -- Parses full stats and returns list of players.
+        playersP :: Parser [Player]
+        playersP =  manyTill anyWord8 (string padding)
+                 >> map C8.unpack <$>
+                    manyTill (takeWhile1 (/= 0x00) <* word8 0x00) (word8 0x00)
+            where
+                padding = pack [ 0x01, 0x70, 0x6C, 0x61, 0x79
+                               , 0x65, 0x72, 0x5F, 0x00, 0x00
+                               ]

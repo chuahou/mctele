@@ -3,5 +3,15 @@
 
 module Main where
 
+import           Mcjoin.Server
+import           Mcjoin.Telegram
+
+import           System.Environment (getEnv)
+
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = do
+    { tok       <- getEnv "MCJOIN_BOT_TOKEN"
+    ; chatId    <- getEnv "MCJOIN_CHAT_ID"
+    ; Just info <- getEnv "MCJOIN_SERVER_ADDR" >>= doApiRequest
+    ; sendServerStatus tok chatId info
+    }

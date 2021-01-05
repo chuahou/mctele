@@ -21,10 +21,12 @@ default-extensions:
 
 dependencies:
     - base          >= 4.13 && < 5
-    - aeson        ^>= 1.4.7.1
+    - attoparsec   ^>= 0.13.2.4
+    - cereal       ^>= 0.5.8.1
+    - bytestring   ^>= 0.10.10.1
+    - network      ^>= 3.1.1.1
     - http-conduit ^>= 2.3.7.3
-    - interpolate
-    - text         ^>= 1.2.4.0
+    - interpolate  ^>= 0.2.1
 
 library:
     source-dirs: src

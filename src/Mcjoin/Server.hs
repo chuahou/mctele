@@ -1,37 +1,87 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2021 Chua Hou
 
-module Mcjoin.Server ( doApiRequest
-                     , ServerInfo (..)
-                     , PlayersInfo (..)
+module Mcjoin.Server ( getInfo
+                     , ServerInfo
                      ) where
 
+import qualified Control.Exception          as Exception
+import           Data.Attoparsec.ByteString (Parser, anyWord8, manyTill,
+                                             maybeResult, parse, string,
+                                             takeWhile1, word8)
+import           Data.ByteString            (ByteString, concat, pack)
+import qualified Data.ByteString.Char8      as C8
+import           Data.Int                   (Int32)
+import           Data.Serialize             (encode)
+import           Data.Word                  (Word8)
+import qualified Network.Socket             as Net
+import qualified Network.Socket.ByteString  as Net
+import           Text.Read                  (readMaybe)
 
-import           Data.Aeson              (FromJSON)
-import           Data.String.Interpolate (i)
-import           Data.Text               (Text)
-import           GHC.Generics            (Generic)
-import           Network.HTTP.Simple     (getResponseBody, httpJSONEither,
-                                          parseRequest)
+-- | Contains all information we need about a server. @Nothing@ if server is
+-- offline; @Just@ list of player usernames otherwise.
+type ServerInfo = Maybe [Player]
 
--- JSON types
-data ServerInfo = ServerInfo
-    { online  :: Bool
-    , players :: PlayersInfo
-    } deriving (Generic, Show)
-newtype PlayersInfo = PlayersInfo { list :: Maybe [Text] }
-    deriving (Generic, Show)
+-- | Players are represented by their username string.
+type Player = String
 
--- We use generics to automatically create 'FromJSON' instances.
-instance FromJSON ServerInfo
-instance FromJSON PlayersInfo
+-- | Magic number for the start of every payload.
+magic :: ByteString
+magic = pack [ 0xFE, 0xFD ]
 
--- | @doApiRequest url@ returns @Just@ a list of 'Player's that are online, and
--- @Nothing@ if @url@ is invalid, or the request fails, where @url@ is the
--- server address.
-doApiRequest :: String -> IO (Maybe ServerInfo)
-doApiRequest url = case parseRequest [i|https://api.mcsrvstat.us/2/#{url}|] of
-                     Just req -> httpJSONEither req >>= (\case
-                        Right info -> pure $ Just info
-                        Left  _    -> pure Nothing) . getResponseBody
-                     Nothing  -> pure Nothing
+-- | Creates a packet with given type and payload.
+makePacket :: Word8 -> ByteString -> ByteString
+makePacket typ payload = Data.ByteString.concat
+                            [ magic
+                            , pack [ typ ]
+                            , pack [ 0x00, 0x00, 0x00, 0x00 ] -- session ID
+                            , payload
+                            ]
+
+-- | Given a socket address, get the server at that address's information.
+getInfo :: Net.SockAddr -> IO ServerInfo
+getInfo addr = tryGetInfo attempts
+    where
+        attempts = 10 :: Int
+
+        tryGetInfo 0 = pure Nothing -- give up
+        tryGetInfo n = (Exception.try handshake
+                        :: IO (Either Exception.SomeException ServerInfo))
+                     >>= \case
+                         Left  _       -> tryGetInfo (n - 1)
+                         Right Nothing -> tryGetInfo (n - 1)
+                         Right info    -> pure info
+
+        handshake = do
+            { sock <- Net.socket Net.AF_INET Net.Datagram Net.defaultProtocol
+            ; Net.connect sock addr
+            ; Net.sendAll sock (makePacket 0x09 (pack []))
+            ; response <- Net.recv sock 128
+            ; case (readMaybe (init . drop 5 . C8.unpack $ response)
+                    :: Maybe Int32) of
+                Just challenge -> request challenge sock <* Net.close sock
+                Nothing        -> Nothing                <$ Net.close sock
+            }
+
+        request challenge sock = do
+            { --sock <- Net.socket Net.AF_INET Net.Datagram Net.defaultProtocol
+            ; Net.connect sock addr
+            ; Net.sendAll sock (makePacket 0x00 (Data.ByteString.concat
+                                    [ encode challenge
+                                    , pack (replicate 4 0x00) -- padding
+                                    ]))
+            ; response <- Net.recv sock 1024
+            ; case maybeResult $ parse playersP response of
+                Nothing -> pure Nothing
+                Just ps -> pure $ Just ps
+            }
+
+-- Parsers full stats and returns list of players.
+playersP :: Parser [Player]
+playersP =  manyTill anyWord8 (string padding)
+         >> map C8.unpack <$>
+                manyTill (takeWhile1 (/= 0x00) <* word8 0x00) (word8 0x00)
+    where
+        padding = pack [ 0x01, 0x70, 0x6C, 0x61, 0x79
+                       , 0x65, 0x72, 0x5F, 0x00, 0x00
+                       ]

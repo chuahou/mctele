@@ -1,0 +1,32 @@
+name:        mcjoinhs
+version:     0.1.0.0
+synopsis:    Telegram bot that notifies when player joins Minecraft server
+description: A simple Telegram bot that sends a message when a player joins a
+             Minecraft server
+category:    Game
+github:      chuahou/mcjoinhs
+maintainer:  Chua Hou <human+github@chuahou.dev>
+
+ghc-options:
+    - -Wall
+    - -fwarn-incomplete-uni-patterns
+    - -fwarn-incomplete-record-updates
+
+default-extensions:
+    - BangPatterns
+    - GADTs
+    - LambdaCase
+    - TupleSections
+    - TypeOperators
+
+dependencies:
+    - name:    base
+      version: ">= 4.13 && < 5"
+      #      mixin:   hiding (Prelude)
+      #    - name:    delude
+      #      version: "^>= 0.1.0.4"
+      #      mixin:   (Delude as Prelude)
+
+executable:
+    main:         Main.hs
+    source-dirs:  exe

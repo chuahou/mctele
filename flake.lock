@@ -1,0 +1,41 @@
+{
+  "nodes": {
+    "hs-updates": {
+      "locked": {
+        "lastModified": 1609810236,
+        "narHash": "sha256-cZ8Z+GjUZJevF2tgJVh84dqtymRSPfMYcgpcaNQSpcg=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c6bed7e078e09c549a94a5051abe006275713fba",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "haskell-updates",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1609817778,
+        "narHash": "sha256-xbLVXYDS07qm/vgRa8nIA9RRu1o0/OoUttNotoT7stA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "178ec8974ff70ef0acffa4cc8f47f3234898ff3d",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "root": {
+      "inputs": {
+        "hs-updates": "hs-updates",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

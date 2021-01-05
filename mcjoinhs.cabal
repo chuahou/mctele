@@ -1,0 +1,31 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           mcjoinhs
+version:        0.1.0.0
+synopsis:       Telegram bot that notifies when player joins Minecraft server
+description:    A simple Telegram bot that sends a message when a player joins a Minecraft server
+category:       Game
+homepage:       https://github.com/chuahou/mcjoinhs#readme
+bug-reports:    https://github.com/chuahou/mcjoinhs/issues
+maintainer:     Chua Hou <human+github@chuahou.dev>
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/chuahou/mcjoinhs
+
+executable mcjoinhs
+  main-is: Main.hs
+  other-modules:
+      Paths_mcjoinhs
+  hs-source-dirs:
+      exe
+  default-extensions: BangPatterns GADTs LambdaCase TupleSections TypeOperators
+  ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
+  build-depends:
+      base >=4.13 && <5
+  default-language: Haskell2010

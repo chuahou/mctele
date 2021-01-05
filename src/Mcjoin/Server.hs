@@ -2,14 +2,17 @@
 -- Copyright (c) 2021 Chua Hou
 
 module Mcjoin.Server ( doApiRequest
-                     , Player
+                     , ServerInfo (..)
+                     , PlayersInfo (..)
                      ) where
 
-import           Data.Aeson          (FromJSON)
-import           Data.Text           (Text)
-import           GHC.Generics        (Generic)
-import           Network.HTTP.Simple (getResponseBody, httpJSONEither,
-                                      parseRequest)
+
+import           Data.Aeson              (FromJSON)
+import           Data.String.Interpolate (i)
+import           Data.Text               (Text)
+import           GHC.Generics            (Generic)
+import           Network.HTTP.Simple     (getResponseBody, httpJSONEither,
+                                          parseRequest)
 
 -- JSON types
 data ServerInfo = ServerInfo
@@ -23,13 +26,11 @@ newtype PlayersInfo = PlayersInfo { list :: Maybe [Text] }
 instance FromJSON ServerInfo
 instance FromJSON PlayersInfo
 
--- | A @Player@ is described solely by their username for our purposes.
-type Player = String
-
 -- | @doApiRequest url@ returns @Just@ a list of 'Player's that are online, and
--- @Nothing@ if @url@ is invalid, or the request fails.
+-- @Nothing@ if @url@ is invalid, or the request fails, where @url@ is the
+-- server address.
 doApiRequest :: String -> IO (Maybe ServerInfo)
-doApiRequest url = case parseRequest url of
+doApiRequest url = case parseRequest [i|https://api.mcsrvstat.us/2/#{url}|] of
                      Just req -> httpJSONEither req >>= (\case
                         Right info -> pure $ Just info
                         Left  _    -> pure Nothing) . getResponseBody

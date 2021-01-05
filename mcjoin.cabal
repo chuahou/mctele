@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 1.18
 
 -- This file has been generated from package.yaml by hpack version 0.34.2.
 --
@@ -15,6 +15,9 @@ maintainer:     Chua Hou <human+github@chuahou.dev>
 license:        MIT
 license-file:   LICENSE
 build-type:     Simple
+extra-doc-files:
+    README.rst
+    CHANGELOG.md
 
 source-repository head
   type: git

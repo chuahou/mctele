@@ -26,3 +26,7 @@ dependencies:
 executable:
     main:         Main.hs
     source-dirs:  exe
+
+extra-doc-files:
+    - README.rst
+    - CHANGELOG.md

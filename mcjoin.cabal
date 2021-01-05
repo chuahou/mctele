@@ -12,6 +12,8 @@ category:       Game
 homepage:       https://github.com/chuahou/mcjoinhs#readme
 bug-reports:    https://github.com/chuahou/mcjoinhs/issues
 maintainer:     Chua Hou <human+github@chuahou.dev>
+license:        MIT
+license-file:   LICENSE
 build-type:     Simple
 
 source-repository head

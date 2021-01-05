@@ -30,7 +30,7 @@ library
       Paths_mcjoin
   hs-source-dirs:
       src
-  default-extensions: BangPatterns DeriveGeneric LambdaCase OverloadedStrings TupleSections
+  default-extensions: BangPatterns DeriveGeneric LambdaCase TupleSections
   ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
   build-depends:
       aeson >=1.4.7.1 && <1.5
@@ -45,7 +45,7 @@ executable mcjoin
       Paths_mcjoin
   hs-source-dirs:
       exe
-  default-extensions: BangPatterns DeriveGeneric LambdaCase OverloadedStrings TupleSections
+  default-extensions: BangPatterns DeriveGeneric LambdaCase TupleSections
   ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
   build-depends:
       aeson >=1.4.7.1 && <1.5

@@ -16,7 +16,6 @@ default-extensions:
     - BangPatterns
     - DeriveGeneric
     - LambdaCase
-    - OverloadedStrings
     - TupleSections
 
 dependencies:

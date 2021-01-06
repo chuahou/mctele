@@ -11,11 +11,14 @@ import           Data.Attoparsec.ByteString (Parser, anyWord8, manyTill,
                                              takeWhile1, word8)
 import           Data.ByteString            (ByteString, concat, pack)
 import qualified Data.ByteString.Char8      as C8
+import           Data.Functor               (($>))
 import           Data.Int                   (Int32)
 import           Data.Serialize             (encode)
+import           Data.String.Interpolate    (i)
 import           Data.Word                  (Word8)
 import qualified Network.Socket             as Net
 import qualified Network.Socket.ByteString  as Net
+import           System.Timeout             (timeout)
 import           Text.Read                  (readMaybe)
 
 -- | Contains all information we need about a server. @Nothing@ if server is
@@ -38,15 +41,20 @@ makePacket typ payload = Data.ByteString.concat
 getInfo :: Net.SockAddr -> IO ServerInfo
 getInfo addr = tryGetInfo attempts
     where
-        attempts = 10 :: Int
+        attempts  = 10 :: Int
+        timeoutMs = 1000000
 
         tryGetInfo 0 = pure Nothing -- give up
-        tryGetInfo n = (Exception.try handshake
-                        :: IO (Either Exception.SomeException ServerInfo))
-                     >>= \case
-                         Left  _       -> tryGetInfo (n - 1)
-                         Right Nothing -> tryGetInfo (n - 1)
-                         Right info    -> pure info
+        tryGetInfo n = timeout timeoutMs (Exception.try handshake
+                        :: IO (Either Exception.IOException ServerInfo))
+                     >>= maybe tryAgain (\case             -- timeout
+                            Left _        -> tryAgain      -- IOException
+                            Right Nothing -> tryAgain      -- unsuccessful query
+                            Right info    -> succeed info) -- successful query
+            where
+                tryAgain =  putStrLn [i|Trying again, #{n - 1} attempt(s) left|]
+                         >> tryGetInfo (n - 1)
+                succeed = (putStrLn "Successful query" $>)
 
         handshake = do
             { sock <- Net.socket Net.AF_INET Net.Datagram Net.defaultProtocol

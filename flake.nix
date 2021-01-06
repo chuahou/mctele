@@ -29,8 +29,22 @@
       mcjoin = pkgs.haskell.lib.dontHaddock
         (pkgs.haskellPackages.callCabal2nix "mcjoin" ./. {});
 
+      mcjoin-static = pkgs.haskell.lib.overrideCabal mcjoin (old: {
+        enableSharedExecutables = false;
+        enableSharedLibraries   = false;
+        configureFlags = [
+          "--ghc-option=-optl=-static"
+          "--ghc-option=-optl=-pthread"
+          "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
+          "--extra-lib-dirs=${pkgs.zlib.static}/lib"
+          "--extra-lib-dirs=${pkgs.glibc.static}/lib"
+          "--extra-lib-dirs=${pkgs.libffi.overrideAttrs (_:
+            { dontDisableStatic = true; })}/lib"
+        ];
+      });
+
     in rec {
-      defaultPackage."${system}" = mcjoin;
+      defaultPackage."${system}" = mcjoin-static;
 
       devShell."${system}" =
         (pkgs.haskell.lib.overrideCabal mcjoin (old: {

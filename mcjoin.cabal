@@ -32,7 +32,7 @@ library
   hs-source-dirs:
       src
   default-extensions: BangPatterns DeriveGeneric LambdaCase QuasiQuotes TupleSections
-  ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
+  ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates -static
   build-depends:
       attoparsec >=0.13.2.4 && <0.14
     , base >=4.13 && <5
@@ -50,7 +50,7 @@ executable mcjoin
   hs-source-dirs:
       exe
   default-extensions: BangPatterns DeriveGeneric LambdaCase QuasiQuotes TupleSections
-  ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
+  ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates -static
   build-depends:
       attoparsec >=0.13.2.4 && <0.14
     , base >=4.13 && <5

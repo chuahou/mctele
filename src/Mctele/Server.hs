@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2021 Chua Hou
 
-module Mcjoin.Server ( getInfo
+module Mctele.Server ( getInfo
                      , ServerInfo
                      ) where
 

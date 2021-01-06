@@ -26,10 +26,10 @@
         };
       };
 
-      mcjoin = pkgs.haskell.lib.dontHaddock
-        (pkgs.haskellPackages.callCabal2nix "mcjoin" ./. {});
+      mctele = pkgs.haskell.lib.dontHaddock
+        (pkgs.haskellPackages.callCabal2nix "mctele" ./. {});
 
-      mcjoin-static = pkgs.haskell.lib.overrideCabal mcjoin (old: {
+      mctele-static = pkgs.haskell.lib.overrideCabal mctele (old: {
         enableSharedExecutables = false;
         enableSharedLibraries   = false;
         configureFlags = [
@@ -44,10 +44,10 @@
       });
 
     in rec {
-      defaultPackage."${system}" = mcjoin-static;
+      defaultPackage."${system}" = mctele-static;
 
       devShell."${system}" =
-        (pkgs.haskell.lib.overrideCabal mcjoin (old: {
+        (pkgs.haskell.lib.overrideCabal mctele (old: {
           buildTools = (old.buildTools or []) ++ (with pkgs.haskellPackages; [
             cabal-install
             haskell-language-server

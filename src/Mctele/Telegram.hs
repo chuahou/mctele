@@ -1,12 +1,12 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2021 Chua Hou
 
-module Mcjoin.Telegram ( BotToken
+module Mctele.Telegram ( BotToken
                        , ChatID
                        , sendServerStatus
                        ) where
 
-import           Mcjoin.Server
+import           Mctele.Server
 
 import           Control.Monad           (void)
 import           Data.String.Interpolate (i)

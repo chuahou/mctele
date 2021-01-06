@@ -3,8 +3,8 @@
 
 module Main where
 
-import           Mcjoin.Server
-import           Mcjoin.Telegram
+import           Mctele.Server
+import           Mctele.Telegram
 
 import           Control.Concurrent           (threadDelay)
 import           Control.Monad                (when)
@@ -18,10 +18,10 @@ import           Text.Read                    (readMaybe)
 
 main :: IO ()
 main = do
-    { tok      <- getEnv    "MCJOIN_BOT_TOKEN"
-    ; chatId   <- getEnv    "MCJOIN_CHAT_ID"
-    ; addr     <- lookupEnv "MCJOIN_SERVER_ADDR"    <&> maybe localhost mkAddr
-    ; interval <- lookupEnv "MCJOIN_QUERY_INTERVAL" <&> fromMaybe 15
+    { tok      <- getEnv    "MCTELE_BOT_TOKEN"
+    ; chatId   <- getEnv    "MCTELE_CHAT_ID"
+    ; addr     <- lookupEnv "MCTELE_SERVER_ADDR"    <&> maybe localhost mkAddr
+    ; interval <- lookupEnv "MCTELE_QUERY_INTERVAL" <&> fromMaybe 15
                                                     . (>>= readMaybe)
     ; loop tok chatId addr interval Nothing
     }

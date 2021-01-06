@@ -1,10 +1,10 @@
-name:        mcjoin
+name:        mctele
 version:     0.1.0.0
 synopsis:    Telegram bot that notifies when player joins Minecraft server
 description: A simple Telegram bot that sends a message when a player joins a
              Minecraft server
 category:    Game
-github:      chuahou/mcjoin
+github:      chuahou/mctele
 maintainer:  Chua Hou <human+github@chuahou.dev>
 
 ghc-options:
@@ -35,7 +35,7 @@ library:
 executable:
     main:         Main.hs
     source-dirs:  exe
-    dependencies: mcjoin
+    dependencies: mctele
 
 extra-doc-files:
     - README.rst

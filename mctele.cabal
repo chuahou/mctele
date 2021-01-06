@@ -4,13 +4,13 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 
-name:           mcjoin
+name:           mctele
 version:        0.1.0.0
 synopsis:       Telegram bot that notifies when player joins Minecraft server
 description:    A simple Telegram bot that sends a message when a player joins a Minecraft server
 category:       Game
-homepage:       https://github.com/chuahou/mcjoin#readme
-bug-reports:    https://github.com/chuahou/mcjoin/issues
+homepage:       https://github.com/chuahou/mctele#readme
+bug-reports:    https://github.com/chuahou/mctele/issues
 maintainer:     Chua Hou <human+github@chuahou.dev>
 license:        MIT
 license-file:   LICENSE
@@ -21,14 +21,14 @@ extra-doc-files:
 
 source-repository head
   type: git
-  location: https://github.com/chuahou/mcjoin
+  location: https://github.com/chuahou/mctele
 
 library
   exposed-modules:
-      Mcjoin.Server
-      Mcjoin.Telegram
+      Mctele.Server
+      Mctele.Telegram
   other-modules:
-      Paths_mcjoin
+      Paths_mctele
   hs-source-dirs:
       src
   default-extensions: BangPatterns DeriveGeneric LambdaCase QuasiQuotes TupleSections
@@ -43,10 +43,10 @@ library
     , network >=3.1.1.1 && <3.2
   default-language: Haskell2010
 
-executable mcjoin
+executable mctele
   main-is: Main.hs
   other-modules:
-      Paths_mcjoin
+      Paths_mctele
   hs-source-dirs:
       exe
   default-extensions: BangPatterns DeriveGeneric LambdaCase QuasiQuotes TupleSections
@@ -58,6 +58,6 @@ executable mcjoin
     , cereal >=0.5.8.1 && <0.6
     , http-conduit >=2.3.7.3 && <2.4
     , interpolate >=0.2.1 && <0.3
-    , mcjoin
+    , mctele
     , network >=3.1.1.1 && <3.2
   default-language: Haskell2010

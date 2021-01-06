@@ -9,22 +9,30 @@ import           Mcjoin.Telegram
 import           Control.Concurrent           (threadDelay)
 import           Control.Monad                (when)
 import           Data.Char                    (isDigit)
+import           Data.Functor                 ((<&>))
+import           Data.Maybe                   (fromMaybe)
 import qualified Network.Socket               as Net
-import           System.Environment           (getEnv)
+import           System.Environment           (getEnv, lookupEnv)
 import           Text.ParserCombinators.ReadP
 import           Text.Read                    (readMaybe)
 
 main :: IO ()
 main = do
-    { tok    <- getEnv "MCJOIN_BOT_TOKEN"
-    ; chatId <- getEnv "MCJOIN_CHAT_ID"
-    ; addr   <- getEnv "MCJOIN_SERVER_ADDR" >>= mkAddr
-    ; loop tok chatId addr Nothing
+    { tok      <- getEnv    "MCJOIN_BOT_TOKEN"
+    ; chatId   <- getEnv    "MCJOIN_CHAT_ID"
+    ; addr     <- lookupEnv "MCJOIN_SERVER_ADDR"    <&> maybe localhost mkAddr
+    ; interval <- lookupEnv "MCJOIN_QUERY_INTERVAL" <&> fromMaybe 15
+                                                    . (>>= readMaybe)
+    ; loop tok chatId addr interval Nothing
     }
     where
-        mkAddr :: String -> IO Net.SockAddr
+        localhost :: Net.SockAddr
+        localhost = Net.SockAddrInet 25565 (Net.tupleToHostAddress
+                                                (127, 0, 0, 1))
+
+        mkAddr :: String -> Net.SockAddr
         mkAddr cs = case readP_to_S addrP cs of
-                      [(y, "")] -> pure y
+                      [(y, "")] -> y
                       _         -> error "Invalid server address"
 
         addrP :: ReadP Net.SockAddr
@@ -44,11 +52,11 @@ main = do
                                      Just w  -> pure w
                                      Nothing -> fail "Invalid number"
 
-        loop tok chatId addr = go
+        loop tok chatId addr interval = go
             where
                 go prev = do
                     { info <- getInfo addr
                     ; when (prev /= info) $ sendServerStatus tok chatId info
-                    ; threadDelay 1000000
+                    ; threadDelay (1000000 * interval)
                     ; go info
                     }

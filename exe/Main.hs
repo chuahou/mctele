@@ -10,7 +10,7 @@ import           Control.Concurrent           (threadDelay)
 import           Control.Monad                (forM_)
 import           Data.Char                    (isDigit)
 import           Data.Functor                 ((<&>))
-import           Data.Maybe                   (fromMaybe)
+import           Data.Maybe                   (fromMaybe, isJust)
 import qualified Network.Socket               as Net
 import           System.Environment           (getEnv, lookupEnv)
 import           Text.ParserCombinators.ReadP
@@ -23,7 +23,8 @@ main = do
     ; addr     <- lookupEnv "MCTELE_SERVER_ADDR"    <&> maybe localhost mkAddr
     ; interval <- lookupEnv "MCTELE_QUERY_INTERVAL" <&> fromMaybe 15
                                                     . (>>= readMaybe)
-    ; loop tok chatId addr interval Nothing Nothing
+    ; keepOld  <- lookupEnv "MCTELE_KEEP_OLD"       <&> isJust
+    ; loop tok chatId addr interval keepOld Nothing Nothing
     }
     where
         localhost :: Net.SockAddr
@@ -52,7 +53,7 @@ main = do
                                      Just w  -> pure w
                                      Nothing -> fail "Invalid number"
 
-        loop tok chatId addr interval = go
+        loop tok chatId addr interval keepOld = go
             where
                 go prev prevMsgId = do
                     { info  <- getInfo addr
@@ -61,5 +62,7 @@ main = do
                                     <* forM_ prevMsgId (deleteMessage tok chatId)
                                   else pure prevMsgId
                     ; threadDelay (1000000 * interval)
-                    ; go info msgId
+                    ; go info (if keepOld then Nothing else msgId)
+                        -- don't propagate message ID to delete if we want to
+                        -- keep old messages
                     }

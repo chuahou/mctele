@@ -18,13 +18,25 @@ import           Text.Read                    (readMaybe)
 
 main :: IO ()
 main = do
+    -- Telegram bot token
     { tok      <- getEnv    "MCTELE_BOT_TOKEN"
+
+    -- Telegram chat ID
     ; chatId   <- getEnv    "MCTELE_CHAT_ID"
+
+    -- Address of minecraft server with port
     ; addr     <- lookupEnv "MCTELE_SERVER_ADDR"    <&> maybe localhost mkAddr
+
+    -- Interval in seconds between queries
     ; interval <- lookupEnv "MCTELE_QUERY_INTERVAL" <&> fromMaybe 15
                                                     . (>>= readMaybe)
+
+    -- Whether to keep old messages (delete otherwise)
     ; keepOld  <- lookupEnv "MCTELE_KEEP_OLD"       <&> isJust
+
+    -- Whether to send messages with silent notifications
     ; silent   <- lookupEnv "MCTELE_SILENT"         <&> isJust
+
     ; loop tok chatId addr interval keepOld silent Nothing Nothing
     }
     where

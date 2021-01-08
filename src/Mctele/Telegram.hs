@@ -35,20 +35,21 @@ createRequest tok op params =
         params'        = intercalate "&" . map mkParam $ params
         mkParam (k, v) = [i|#{k}=#{v}|]
 
--- | @sendServerStatus tok chatId info@ uses the Telegram Bot API with
--- token @tok@ to send server status @info@ to chat with ID @chatId@
+-- | @sendServerStatus silent tok chatId info@ uses the Telegram Bot API with
+-- token @tok@ to send server status @info@ to chat with ID @chatId@, with
+-- silent notifications if @silent@ is true.
 --
 -- Returns the resulting message ID.
-sendServerStatus :: BotToken -> ChatID -> ServerInfo -> IO (Maybe MessageID)
-sendServerStatus tok chatId info =   request >>= httpJSONEither
-                                 <&> either (const Nothing) getMessageId
-                                 .   getResponseBody
+sendServerStatus :: Bool -> BotToken -> ChatID -> ServerInfo -> IO (Maybe MessageID)
+sendServerStatus silent tok chatId info =   request >>= httpJSONEither
+                                        <&> either (const Nothing) getMessageId
+                                        .   getResponseBody
     where
-        request = parseRequest $ createRequest tok "sendMessage"
+        request = parseRequest $ createRequest tok "sendMessage" $
                     [ ("chat_id",    chatId)
                     , ("text",       text info)
                     , ("parse_mode", "MarkdownV2")
-                    ]
+                    ] ++ [("disable_notification", "true") | silent]
         text (Just []) =   "Server *ONLINE* with no players\\."
         text (Just ps) = [i|Server *ONLINE* with #{length ps} players: `#{unwords ps}`\\.|]
         text Nothing   =   "Server *OFFLINE*\\."

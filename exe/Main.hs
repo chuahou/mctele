@@ -24,7 +24,8 @@ main = do
     ; interval <- lookupEnv "MCTELE_QUERY_INTERVAL" <&> fromMaybe 15
                                                     . (>>= readMaybe)
     ; keepOld  <- lookupEnv "MCTELE_KEEP_OLD"       <&> isJust
-    ; loop tok chatId addr interval keepOld Nothing Nothing
+    ; silent   <- lookupEnv "MCTELE_SILENT"         <&> isJust
+    ; loop tok chatId addr interval keepOld silent Nothing Nothing
     }
     where
         localhost :: Net.SockAddr
@@ -53,12 +54,12 @@ main = do
                                      Just w  -> pure w
                                      Nothing -> fail "Invalid number"
 
-        loop tok chatId addr interval keepOld = go
+        loop tok chatId addr interval keepOld silent = go
             where
                 go prev prevMsgId = do
                     { info  <- getInfo addr
                     ; msgId <- if prev /= info
-                                  then sendServerStatus tok chatId info
+                                  then sendServerStatus silent tok chatId info
                                     <* forM_ prevMsgId (deleteMessage tok chatId)
                                   else pure prevMsgId
                     ; threadDelay (1000000 * interval)

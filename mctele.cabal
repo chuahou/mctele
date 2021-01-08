@@ -34,7 +34,8 @@ library
   default-extensions: BangPatterns DeriveGeneric LambdaCase QuasiQuotes TupleSections
   ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates -static
   build-depends:
-      attoparsec >=0.13.2.4 && <0.14
+      aeson >=1.4.7.1 && <1.5
+    , attoparsec >=0.13.2.4 && <0.14
     , base >=4.13 && <5
     , bytestring >=0.10.10.1 && <0.11
     , cereal >=0.5.8.1 && <0.6
@@ -52,7 +53,8 @@ executable mctele
   default-extensions: BangPatterns DeriveGeneric LambdaCase QuasiQuotes TupleSections
   ghc-options: -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates -static
   build-depends:
-      attoparsec >=0.13.2.4 && <0.14
+      aeson >=1.4.7.1 && <1.5
+    , attoparsec >=0.13.2.4 && <0.14
     , base >=4.13 && <5
     , bytestring >=0.10.10.1 && <0.11
     , cereal >=0.5.8.1 && <0.6

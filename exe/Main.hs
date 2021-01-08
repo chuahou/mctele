@@ -7,7 +7,7 @@ import           Mctele.Server
 import           Mctele.Telegram
 
 import           Control.Concurrent           (threadDelay)
-import           Control.Monad                (when)
+import           Control.Monad                (forM_)
 import           Data.Char                    (isDigit)
 import           Data.Functor                 ((<&>))
 import           Data.Maybe                   (fromMaybe)
@@ -23,7 +23,7 @@ main = do
     ; addr     <- lookupEnv "MCTELE_SERVER_ADDR"    <&> maybe localhost mkAddr
     ; interval <- lookupEnv "MCTELE_QUERY_INTERVAL" <&> fromMaybe 15
                                                     . (>>= readMaybe)
-    ; loop tok chatId addr interval Nothing
+    ; loop tok chatId addr interval Nothing Nothing
     }
     where
         localhost :: Net.SockAddr
@@ -54,9 +54,12 @@ main = do
 
         loop tok chatId addr interval = go
             where
-                go prev = do
-                    { info <- getInfo addr
-                    ; when (prev /= info) $ sendServerStatus tok chatId info
+                go prev prevMsgId = do
+                    { info  <- getInfo addr
+                    ; msgId <- if prev /= info
+                                  then sendServerStatus tok chatId info
+                                    <* forM_ prevMsgId (deleteMessage tok chatId)
+                                  else pure prevMsgId
                     ; threadDelay (1000000 * interval)
-                    ; go info
+                    ; go info msgId
                     }

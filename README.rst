@@ -20,6 +20,10 @@ variables set:
   ``192.168.1.1:25565``. Defaults to ``127.0.0.1:25565``.
 * ``MCTELE_QUERY_INTERVAL``: (optional) Interval in seconds between each
   query to make. Defaults to 15 seconds.
+* ``MCTELE_KEEP_OLD``: (optional) If set, keep old messages when new one
+  is sent. Otherwise, delete the old message.
+* ``MCTELE_SILENT``: (optional) If set, send messages with silent
+  notifications.
 
 Do not forget to set in the ``server.properties``::
 

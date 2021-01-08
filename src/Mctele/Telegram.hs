@@ -14,26 +14,27 @@ import           Mctele.Server
 
 import           Control.Monad           (void, (>=>))
 import           Data.Aeson              (FromJSON)
+import           Data.ByteString.Char8   (pack)
 import           Data.Functor            ((<&>))
-import           Data.List               (intercalate)
 import           Data.String.Interpolate (i)
 import           GHC.Generics            (Generic)
-import           Network.HTTP.Simple     (getResponseBody, httpJSONEither,
-                                          httpNoBody, parseRequest)
+import           Network.HTTP.Simple     (Request, getResponseBody,
+                                          httpJSONEither, httpNoBody,
+                                          parseRequest, setRequestQueryString)
 
 type BotToken  = String
 type ChatID    = String
 type MessageID = String
 
--- | @createRequest tok op params@ creates a Telegram API request string with
--- bot token @tok@, operation @op@ and tuples of @(key, value)@s as parameters
--- @params@.
-createRequest :: BotToken -> String -> [(String, String)] -> String
-createRequest tok op params =
-    [i|https://api.telegram.org/bot#{tok}/#{op}?#{params'}|]
+-- | @createRequest tok op params@ creates a Telegram API request with bot token
+-- @tok@, operation @op@ and tuples of @(key, value)@s as parameters @params@.
+createRequest :: BotToken -> String -> [(String, String)] -> IO Request
+createRequest tok op params = setRequestQueryString query <$> baseRequest
     where
-        params'        = intercalate "&" . map mkParam $ params
-        mkParam (k, v) = [i|#{k}=#{v}|]
+        baseRequest    = parseRequest
+                            [i|https://api.telegram.org/bot#{tok}/#{op}|]
+        query          = map mkParam params
+        mkParam (k, v) = (pack k, pure . pack $ v)
 
 -- | @sendServerStatus silent tok chatId info@ uses the Telegram Bot API with
 -- token @tok@ to send server status @info@ to chat with ID @chatId@, with
@@ -45,20 +46,20 @@ sendServerStatus silent tok chatId info =   request >>= httpJSONEither
                                         <&> either (const Nothing) getMessageId
                                         .   getResponseBody
     where
-        request = parseRequest $ createRequest tok "sendMessage" $
+        request = createRequest tok "sendMessage" $
                     [ ("chat_id",    chatId)
                     , ("text",       text info)
                     , ("parse_mode", "MarkdownV2")
                     ] ++ [("disable_notification", "true") | silent]
-        text (Just []) =   "[Server] *ONLINE*"
-        text (Just ps) = [i|[Server] *ONLINE*, #{length ps} players: `#{unwords ps}`|]
-        text Nothing   =   "[Server] *OFFLINE*"
+        text (Just []) =   "\\[Server\\] *ONLINE*"
+        text (Just ps) = [i|\\[Server\\] *ONLINE*, #{length ps} players: `#{unwords ps}`|]
+        text Nothing   =   "\\[Server\\] *OFFLINE*"
 
 -- | Deletes the specified message on Telegram.
 deleteMessage :: BotToken -> ChatID -> MessageID -> IO ()
 deleteMessage tok chatId msgId = request >>= void . httpNoBody
     where
-        request = parseRequest $ createRequest tok "deleteMessage"
+        request = createRequest tok "deleteMessage"
                     [ ("chat_id",    chatId)
                     , ("message_id", msgId)
                     ]

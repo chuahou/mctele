@@ -1,5 +1,9 @@
 # Revision history for mctele
 
+## 0.3.0.0 -- 2020-01-08
+
+* Modify formatting of messages.
+
 ## 0.2.0.0 -- 2020-01-08
 
 * Delete old messages when new one is sent (unless `MCTELE_KEEP_OLD` is set).

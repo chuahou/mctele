@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           mctele
-version:        0.2.0.0
+version:        0.3.0.0
 synopsis:       Telegram bot that notifies when player joins Minecraft server
 description:    A simple Telegram bot that sends a message when a player joins a Minecraft server
 category:       Game

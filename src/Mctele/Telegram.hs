@@ -50,9 +50,9 @@ sendServerStatus silent tok chatId info =   request >>= httpJSONEither
                     , ("text",       text info)
                     , ("parse_mode", "MarkdownV2")
                     ] ++ [("disable_notification", "true") | silent]
-        text (Just []) =   "Server *ONLINE* with no players\\."
-        text (Just ps) = [i|Server *ONLINE* with #{length ps} players: `#{unwords ps}`\\.|]
-        text Nothing   =   "Server *OFFLINE*\\."
+        text (Just []) =   "[Server] *ONLINE*"
+        text (Just ps) = [i|[Server] *ONLINE*, #{length ps} players: `#{unwords ps}`|]
+        text Nothing   =   "[Server] *OFFLINE*"
 
 -- | Deletes the specified message on Telegram.
 deleteMessage :: BotToken -> ChatID -> MessageID -> IO ()

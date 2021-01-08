@@ -16,6 +16,7 @@ import           Control.Monad           (void, (>=>))
 import           Data.Aeson              (FromJSON)
 import           Data.ByteString.Char8   (pack)
 import           Data.Functor            ((<&>))
+import           Data.List               (intercalate)
 import           Data.String.Interpolate (i)
 import           GHC.Generics            (Generic)
 import           Network.HTTP.Simple     (Request, getResponseBody,
@@ -52,7 +53,7 @@ sendServerStatus silent tok chatId info =   request >>= httpJSONEither
                     , ("parse_mode", "MarkdownV2")
                     ] ++ [("disable_notification", "true") | silent]
         text (Just []) =   "\\[Server\\] *ONLINE*"
-        text (Just ps) = [i|\\[Server\\] *ONLINE*, #{length ps} players: `#{unwords ps}`|]
+        text (Just ps) = [i|\\[Server\\] *ONLINE*, #{length ps} players: `#{intercalate "`, `" ps}`|]
         text Nothing   =   "\\[Server\\] *OFFLINE*"
 
 -- | Deletes the specified message on Telegram.
